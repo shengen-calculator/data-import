@@ -1,6 +1,9 @@
 const configuration = require('../settings');
 const {Datastore} = require('@google-cloud/datastore');
 const Log = require('../log');
+const sql = require('mssql');
+const config = require('../mssql.connection').config;
+
 
 
 const getProvider = (data, key) =>
@@ -57,12 +60,16 @@ const provider = async (req, res) => {
 
         const log = new Log(req.body.name);
         const {getQuery} = require(`../handlers/${req.body.name}`);
-
         await log.info(`Start handling provider ${req.body.name}`);
-        //console.log(getQuery());
-        res.status(200).send();
-    }
 
+        try {
+            const pool = await sql.connect(config);
+            const result = await pool.query(getQuery());
+            res.status(200).send(result.recordset);
+        } catch (err) {
+            res.status(500).send({err: err.message});
+        }
+    }
 };
 
 module.exports = provider;

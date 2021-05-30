@@ -1,5 +1,7 @@
 const getQuery = () => {
-    return `CREATE TABLE [dbo].[prices](
+    return `
+    BEGIN TRANSACTION
+    CREATE TABLE [dbo].[5670706842959872_tmp](
                              [tow_kod] [varchar](50) NULL,
                              [index] [varchar](50) NULL,
                              [tecdoc_index] [varchar](50) NULL,
@@ -51,6 +53,13 @@ const getQuery = () => {
                              [uy2] [varchar](50) NULL,
                              [uu1] [varchar](50) NULL,
                              [uu2] [varchar](50) NULL
-) ON [PRIMARY]`;
+) ON [PRIMARY]
+
+BULK INSERT [5670706842959872_tmp]
+    FROM 'C:\\Program Files\\Data Import\\Temp\\5670706842959872.csv'
+    WITH ( FIELDTERMINATOR = '";"', ROWTERMINATOR = '0x0a', CODEPAGE = '1251', FIRSTROW = 2)
+COMMIT    
+SELECT COUNT(1) AS QTY FROM [5670706842959872_tmp]
+`;
 };
 module.exports.getQuery = getQuery;
