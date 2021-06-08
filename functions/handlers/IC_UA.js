@@ -113,25 +113,26 @@ const getQuery = () => {
            BAZA.PRODUCER_NUMBER,
            BAZA.PRODUCER_NAME,
            RIGHT(BAZA.SUPP_DESCRIPTION, 80),
-           0,
-           0,
-           0,
-           0,
-           0,
-           REPLACE([5670706842959872_tmp].spec_price, ',', '.'),
-           0,
-           0,
+           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.12,
+           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.25/0.65*0.75,
+           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.25/0.65*0.7,
+           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate(),
+           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.25,
+           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate(),
+           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.15,
+           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.25/0.65,
            [5670706842959872_tmp].ug1,
            GETDATE(),
            RIGHT(dbo.BAZA.SUPP_NUMBER, 25),
            7,
-           0,
-           5    
+           dbo.GetQualityByBrand(BAZA.PRODUCER_BRAND),
+           5
+    
     FROM [5670706842959872_tmp]
              INNER JOIN
          BAZA ON [5670706842959872_tmp].tow_kod = BAZA.SUPP_PART_ID
     WHERE ([5670706842959872_tmp].ug1 > '0')
-    
+
     SELECT COUNT(1) AS QTY FROM [5670706842959872_tmp]
     DROP TABLE [5670706842959872_tmp]
     COMMIT    
