@@ -64,7 +64,13 @@ const provider = async (req, res) => {
 
         try {
             const pool = await sql.connect(config);
-            const result = await pool.query(getQuery());
+            const transaction = new sql.Transaction(pool);
+
+            await transaction.begin();
+            const request = new sql.Request(transaction);
+            const result = await request.query(getQuery());
+            await transaction.commit();
+
             res.status(200).send(result.recordset);
         } catch (err) {
             res.status(500).send({err: err.message});

@@ -1,6 +1,5 @@
 const getQuery = () => {
     return `
-    BEGIN TRANSACTION
     /* Create temporary table */
     CREATE TABLE [dbo].[5670706842959872_tmp](
                              [tow_kod] [varchar](50) NULL,
@@ -135,7 +134,6 @@ const getQuery = () => {
 
     SELECT COUNT(1) AS QTY FROM [5670706842959872_tmp]
     DROP TABLE [5670706842959872_tmp]
-    COMMIT    
 
 `;
 };
