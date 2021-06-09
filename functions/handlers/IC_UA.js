@@ -1,7 +1,24 @@
+import {returnQuantity} from "./common/returnQuantity";
+import {dropTemporaryTable} from "./common/dropTemporaryTable";
+
 const getQuery = () => {
     return `
-    /* Create temporary table */
-    CREATE TABLE [dbo].[5670706842959872_tmp](
+        ${createTemporaryTable()}
+        ${importData()}
+        ${insertNewPositionsToCatalog('5')}
+        ${insertPositionsToPrice('1.25', '1.15', '1.12', '7', 'ug1', '5')}    
+        ${insertPositionsToPrice('1.25', '1.15', '1.12', '9', 'ug2', '5')}    
+        ${insertPositionsToPrice('1.25', '1.15', '1.12', '11', 'um1', '5')}    
+        ${insertPositionsToPrice('1.25', '1.15', '1.12', '12', 'um2', '5')}    
+        ${insertPositionsToPrice('1.25', '1.15', '1.12', '14', 'uj0', '5')}    
+        ${insertPositionsToPrice('1.25', '1.15', '1.12', '84', 'ur1', '5')}    
+        ${returnQuantity('[5670706842959872_tmp]')}
+        ${dropTemporaryTable('[5670706842959872_tmp]')}`;
+};
+
+const createTemporaryTable = () => {
+    return `
+        CREATE TABLE [dbo].[5670706842959872_tmp](
                              [tow_kod] [varchar](50) NULL,
                              [index] [varchar](50) NULL,
                              [tecdoc_index] [varchar](50) NULL,
@@ -53,88 +70,89 @@ const getQuery = () => {
                              [uy2] [varchar](50) NULL,
                              [uu1] [varchar](50) NULL,
                              [uu2] [varchar](50) NULL
-    ) ON [PRIMARY]
-    
-    /* Import data */
-    BULK INSERT [5670706842959872_tmp]
+        ) ON [PRIMARY]`;
+};
+
+const importData = () => {
+    return `
+        BULK INSERT [5670706842959872_tmp]
         FROM 'C:\\Program Files\\Data Import\\Temp\\5670706842959872.csv'
         WITH ( FIELDTERMINATOR = '";"', ROWTERMINATOR = '0x0a', CODEPAGE = '1251', FIRSTROW = 2)
         
-    UPDATE [5670706842959872_tmp]
-    SET [tow_kod] = RIGHT([tow_kod], LEN([tow_kod]) - 1)
-    
-    /* Insert new positions to BAZA */
-    INSERT INTO BAZA_TEMP (SUPP_BRAND,
-                           SUPP_NUMBER,
-                           SUPP_NAME,
-                           SUPP_DESCRIPTION,
-                           SUPP_ID,
-                           PRODUCER_BRAND,
-                           PRODUCER_NUMBER,
-                           PRODUCER_NAME,
-                           SUPP_PART_ID)
-    
-    SELECT [5670706842959872_tmp].producer,
-           [5670706842959872_tmp].[index],
-           dbo.GetShortNumber([5670706842959872_tmp].[index]),
-           [5670706842959872_tmp].naz,
-           5,
-           [5670706842959872_tmp].producer,
-           [5670706842959872_tmp].[index],
-           dbo.GetShortNumber([5670706842959872_tmp].[index]),
-           [5670706842959872_tmp].tow_kod
-    FROM [5670706842959872_tmp]
-             LEFT OUTER JOIN
-         BAZA ON [5670706842959872_tmp].tow_kod = BAZA.SUPP_PART_ID
-    WHERE (BAZA.ID IS NULL)
-      AND ([5670706842959872_tmp].producer IS NOT NULL) 
-      
-    /* Insert positions UG1 to price */    
-    INSERT INTO Prices_temp(Брэнд,
-                            [Номер запчасти],
-                            Name,
-                            Описание,
-                            [Срок доставки],
-                            Цена4,
-                            Цена5,
-                            Цена6,
-                            Цена7,
-                            Цена13,
-                            Цена14,
-                            Цена,
-                            Наличие,
-                            Дата,
-                            [Номер поставщика],
-                            WarehouseId,
-                            Quality,
-                            ID_Поставщика)
-    SELECT BAZA.PRODUCER_BRAND,
-           BAZA.PRODUCER_NUMBER,
-           BAZA.PRODUCER_NAME,
-           RIGHT(BAZA.SUPP_DESCRIPTION, 80),
-           0,
-           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.12,
-           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.25/0.65*0.75,
-           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.25/0.65*0.7,
-           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.25,
-           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate(),
-           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.15,
-           REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*1.25/0.65,
-           [5670706842959872_tmp].ug1,
-           GETDATE(),
-           RIGHT(dbo.BAZA.SUPP_NUMBER, 25),
-           7,
-           dbo.GetQualityByBrand(BAZA.PRODUCER_BRAND),
-           5
-    
-    FROM [5670706842959872_tmp]
-             INNER JOIN
-         BAZA ON [5670706842959872_tmp].tow_kod = BAZA.SUPP_PART_ID
-    WHERE ([5670706842959872_tmp].ug1 > '0')
-
-    SELECT COUNT(1) AS QTY FROM [5670706842959872_tmp]
-    DROP TABLE [5670706842959872_tmp]
-
-`;
+        UPDATE [5670706842959872_tmp]
+        SET [tow_kod] = RIGHT([tow_kod], LEN([tow_kod]) - 1)`;
 };
+
+const insertNewPositionsToCatalog = (vendorId) => {
+    return `
+        INSERT INTO BAZA_TEMP (SUPP_BRAND,
+                               SUPP_NUMBER,
+                               SUPP_NAME,
+                               SUPP_DESCRIPTION,
+                               SUPP_ID,
+                               PRODUCER_BRAND,
+                               PRODUCER_NUMBER,
+                               PRODUCER_NAME,
+                               SUPP_PART_ID)
+        
+        SELECT [5670706842959872_tmp].producer,
+               [5670706842959872_tmp].[index],
+               dbo.GetShortNumber([5670706842959872_tmp].[index]),
+               [5670706842959872_tmp].naz,
+               ${vendorId},
+               [5670706842959872_tmp].producer,
+               [5670706842959872_tmp].[index],
+               dbo.GetShortNumber([5670706842959872_tmp].[index]),
+               [5670706842959872_tmp].tow_kod
+        FROM [5670706842959872_tmp]
+                 LEFT OUTER JOIN
+             BAZA ON [5670706842959872_tmp].tow_kod = BAZA.SUPP_PART_ID
+        WHERE (BAZA.ID IS NULL)
+          AND ([5670706842959872_tmp].producer IS NOT NULL)`;
+};
+
+const insertPositionsToPrice = (margin, marginPlus, marginSPlus, warehouseId, warehouseName, vendorId) => {
+    return `
+        INSERT INTO Prices_temp(Брэнд,
+                                [Номер запчасти],
+                                Name,
+                                Описание,
+                                [Срок доставки],
+                                Цена4,
+                                Цена5,
+                                Цена6,
+                                Цена7,
+                                Цена13,
+                                Цена14,
+                                Цена,
+                                Наличие,
+                                Дата,
+                                [Номер поставщика],
+                                WarehouseId,
+                                Quality,
+                                ID_Поставщика)
+        SELECT BAZA.PRODUCER_BRAND,
+               BAZA.PRODUCER_NUMBER,
+               BAZA.PRODUCER_NAME,
+               RIGHT(BAZA.SUPP_DESCRIPTION, 80),
+               0,
+               REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*${marginSPlus},
+               REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*${margin}/0.65*0.75,
+               REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*${margin}/0.65*0.7,
+               REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*${margin},
+               REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate(),
+               REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*${marginPlus},
+               REPLACE([5670706842959872_tmp].spec_price, ',', '.')/dbo.GetEurRate()*${margin}/0.65,
+               [5670706842959872_tmp].ug1,
+               GETDATE(),
+               RIGHT(dbo.BAZA.SUPP_NUMBER, 25),
+               ${warehouseId},
+               dbo.GetQualityByBrand(BAZA.PRODUCER_BRAND),
+               ${vendorId}        
+        FROM [5670706842959872_tmp]
+                 INNER JOIN
+             BAZA ON [5670706842959872_tmp].tow_kod = BAZA.SUPP_PART_ID
+        WHERE ([5670706842959872_tmp].${warehouseName} > '0')`;
+};
+
 module.exports.getQuery = getQuery;
