@@ -1,5 +1,5 @@
-import {returnQuantity} from "./common/returnQuantity";
-import {dropTemporaryTable} from "./common/dropTemporaryTable";
+const {dropTemporaryTable} = require('./common/dropTemporaryTable');
+const {returnQuantity} = require('./common/returnQuantity');
 
 const getQuery = () => {
     return `
