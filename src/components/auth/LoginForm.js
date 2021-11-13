@@ -8,7 +8,7 @@ export default function LoginPage({email, password, errors, onChange, onLogin, i
                     <div className="row">
                         <div className="col-3 col-0-small"/>
                         <div className="col-6 col-12-small">
-                            <input type="email"
+                            <input type="text"
                                    name="email"
                                    value={email}
                                    onChange={onChange}

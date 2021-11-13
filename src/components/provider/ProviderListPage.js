@@ -17,6 +17,9 @@ function ProviderListPage({providers, loadProvidersRequest}) {
         event.preventDefault();
         history.push('/provider');
     };
+    const goBack = () => {
+        history.push("/");
+    };
     return (
         <React.Fragment>
 
@@ -29,11 +32,13 @@ function ProviderListPage({providers, loadProvidersRequest}) {
                 <div className="inner">
                     <div className="content">
                         <div className="col-12">
-                            <ul className="actions">
-                                <form onSubmit={handleNewVendor}>
+                            <form onSubmit={handleNewVendor}>
+                                <ul className="actions">
+                                    <li><input type="button" value="<< Go Back" onClick={goBack} className="primary"/>
+                                    </li>
                                     <li><input type="submit" value="Створити Нового" className="primary"/></li>
-                                </form>
-                            </ul>
+                                </ul>
+                            </form>
                         </div>
                         <div className="table-wrapper">
                             {providers ? <table>

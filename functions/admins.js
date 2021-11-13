@@ -1,3 +1,3 @@
-const Admins = ['import@fenix.parts'];
+const Admins = ['sprint@uz.ua'];
 
 module.exports = Admins;
