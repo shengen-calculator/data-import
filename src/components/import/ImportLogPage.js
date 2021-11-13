@@ -19,7 +19,7 @@ export default function ImportLogPage() {
                     <div className="content">
                         <div className="col-12">
                             <ul className="actions">
-                                <li><input type="button" value="<< Go Back" onClick={goBack} className="primary"/></li>
+                                <li><input type="button" value="<<" onClick={goBack} className="primary"/></li>
                              </ul>
                         </div>
                         <div className="table-wrapper">

@@ -32,7 +32,7 @@ export default function ReadyToTransferPage() {
                         <form onSubmit={handleStartTransfer}>
                             <div className="col-12">
                                 <ul className="actions">
-                                    <li><input type="button" value="<< Go Back" onClick={goBack} className="primary"/></li>
+                                    <li><input type="button" value="<<" onClick={goBack} className="primary"/></li>
                                     <li><input type="submit" value="Start Transfer" className="primary"/></li>
                                     <li><input type="button" value="Transfer Log" onClick={handleTransferLogClick}/></li>
                                 </ul>

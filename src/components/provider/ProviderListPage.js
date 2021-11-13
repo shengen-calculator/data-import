@@ -34,7 +34,7 @@ function ProviderListPage({providers, loadProvidersRequest}) {
                         <div className="col-12">
                             <form onSubmit={handleNewVendor}>
                                 <ul className="actions">
-                                    <li><input type="button" value="<< Go Back" onClick={goBack} className="primary"/>
+                                    <li><input type="button" value="<<" onClick={goBack} className="primary"/>
                                     </li>
                                     <li><input type="submit" value="Створити Нового" className="primary"/></li>
                                 </ul>
