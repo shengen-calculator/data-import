@@ -1,6 +1,11 @@
 import React from 'react';
+import {useHistory} from "react-router-dom";
 
 export default function TransferLogPage() {
+    const history = useHistory();
+    const goBack = () => {
+        history.goBack();
+    };
     return (
         <React.Fragment>
 
@@ -12,6 +17,11 @@ export default function TransferLogPage() {
             <section id="main" className="wrapper">
                 <div className="inner">
                     <div className="content">
+                        <div className="col-12">
+                            <ul className="actions">
+                                <li><input type="button" value="<< Go Back" onClick={goBack} className="primary"/></li>
+                            </ul>
+                        </div>
                         <div className="table-wrapper">
                             <table>
                                 <thead>
